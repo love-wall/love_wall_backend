@@ -91,7 +91,7 @@ app.get("/images", (req, res) => {
           .json({ error: "Error fetching images from database" });
       }
       const images = results.map((row) => ({
-        url: `http://localhost:3000/uploads/${row.url}`,
+        url: `${row.url}`,
         x: row.x,
         y: row.y,
       }));
