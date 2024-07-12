@@ -1,7 +1,7 @@
 const { Image } = require('../models');
 const path = require('path');
 const multer = require('multer');
-const { Op } = require('sequelize'); // Import Op from Sequelize
+const { Op } = require('sequelize');
 
 // Configure multer for file uploads
 const storage = multer.diskStorage({
@@ -61,4 +61,27 @@ const getImages = async (req, res) => {
     }
 };
 
-module.exports = { uploadImage, getImages };
+// Update image position in the database
+const updateImagePosition = async (req, res) => {
+    const { id, x, y } = req.body;
+    if (!id || x === undefined || y === undefined) {
+        return res.status(400).json({ error: "Missing required fields" });
+    }
+
+    try {
+        const image = await Image.findByPk(id);
+        if (!image) {
+            return res.status(404).json({ error: "Image not found" });
+        }
+
+        image.x = x;
+        image.y = y;
+        await image.save();
+        res.json(image);
+    } catch (error) {
+        console.error("Error updating image position:", error);
+        res.status(500).json({ error: "Error updating image position" });
+    }
+};
+
+module.exports = { uploadImage, getImages, updateImagePosition };
